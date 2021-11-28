@@ -14,7 +14,7 @@ mat matrix_new(int m, int n) {
     x->v[0] = calloc(sizeof(double), m * n);
 
     int i;
-//#pragma omp parallel for private(i)
+#pragma omp parallel for private(i)
     for (i = 0; i < m; i++)
         x->v[i] = x->v[0] + n * i;
     x->m = m;
@@ -191,9 +191,10 @@ mat find_eigenvalues(mat input_matrix, int iterations_count) {
     mat R, Q;
     mat A = matrix_copy(input_matrix);
     for (int i = 0; i < iterations_count; i++) {
-        if (i % 100 == 0)
+        if (i % 50 == 0)
             printf("iteration %d\n", i);
         householder(A, &R, &Q);
+        matrix_delete(A);
         A = matrix_mul(R, Q);
     }
 
@@ -202,9 +203,18 @@ mat find_eigenvalues(mat input_matrix, int iterations_count) {
     return A;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        printf("./main <количество потоков>");
+        return 1;
+    }
+
+    char *end;
+    int count_of_threads = (int) strtol(argv[1], &end, 10);
+    printf("Threads: %d\n", count_of_threads);
+
     omp_set_nested(1);
-    omp_set_num_threads(2);
+    omp_set_num_threads(count_of_threads);
 
     double start_time = omp_get_wtime();
     mat input_matrix = matrix_from_file("../inputs/matrix-100", 100);
