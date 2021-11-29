@@ -217,8 +217,8 @@ int main(int argc, char *argv[]) {
     omp_set_num_threads(count_of_threads);
 
     double start_time = omp_get_wtime();
-    mat input_matrix = matrix_from_file("../inputs/matrix-100", 100);
-    mat E = find_eigenvalues(input_matrix, 250);
+    mat input_matrix = matrix_from_file("../inputs/matrix-3000", 3000);
+    mat E = find_eigenvalues(input_matrix, 1);
     double elapsed_time = omp_get_wtime() - start_time;
 
     show_eigenvalues(E);
